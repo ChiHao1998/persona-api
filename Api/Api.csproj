@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Build optimizations -->
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild> <!-- Dev only -->
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis> <!-- Dev only -->
+
+    <!-- Enable parallel compilation of projects -->
+    <BuildInParallel>true</BuildInParallel>
+
+    <!-- Faster incremental build for unchanged files -->
+    <UseSharedCompilation>true</UseSharedCompilation>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Project references -->
+    <ProjectReference Include="..\Configuration\AppSetting\AppSetting.csproj" />
+    <ProjectReference Include="..\Configuration\Directory\Directory.csproj" />
+    <ProjectReference Include="..\Configuration\HttpClient\HttpClient.csproj" />
+    <ProjectReference Include="..\Configuration\DependencyInjection\DependencyInjection.csproj" />
+    <ProjectReference Include="..\Configuration\SerilogLogger\SerilogLogger.csproj" />
+    <ProjectReference Include="..\Configuration\Cors\Cors.csproj" />
+    <ProjectReference Include="..\Configuration\ApiVersioning\ApiVersioning.csproj" />
+    <ProjectReference Include="..\Configuration\Controller\Controller.csproj" />
+    <ProjectReference Include="..\Configuration\Swagger\Swagger.csproj" />
+    <ProjectReference Include="..\Configuration\Postgres\Postgres.csproj" />
+    <ProjectReference Include="..\Configuration\ResponseCompression\ResponseCompression.csproj" />
+    <ProjectReference Include="..\Configuration\DatabaseBroker\DatabaseBroker.csproj" />
+    <ProjectReference Include="..\Configuration\BCryptPasswordHasher\BCryptPasswordHasher.csproj" />
+    <ProjectReference Include="..\Configuration\QuartzScheduler\QuartzScheduler.csproj" />
+  </ItemGroup>
+
+  <!-- Dev-only builds: enable hot reload -->
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <HotReloadEnabled>true</HotReloadEnabled>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>obj\generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+</Project>
