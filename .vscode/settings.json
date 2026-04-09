@@ -1,6 +1,7 @@
 {
     "conventionalCommits.scopes": [
         "common",
-        "configuration"
+        "configuration",
+        "vault"
     ]
 }
