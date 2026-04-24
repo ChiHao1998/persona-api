@@ -25,6 +25,9 @@ public static class SerilogLoggerConfiguration
                 .MinimumLevel.Override("Microsoft.Extensions.Http", LogEventLevel.Fatal)
                 .MinimumLevel.Override("Microsoft.Extensions.Hosting", LogEventLevel.Fatal)
                 .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Fatal)
+                .MinimumLevel.Override("Microsoft.AspNetCore.Server.Kestrel", LogEventLevel.Error)
+                .MinimumLevel.Override("Quartz", LogEventLevel.Warning)
+                .MinimumLevel.Override("DBConnectionManager", LogEventLevel.Warning)
 
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
