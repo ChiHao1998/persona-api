@@ -13,9 +13,12 @@ public static class QuartzSchedulerConfiguration
             {
                 s.UsePostgres(options =>
                 {
-                    options.TablePrefix = "quartz_";
-                }, connectionstrings);
+                    options.TablePrefix = "qrtz_";
+                    options.ConnectionString = connectionstrings;
+                });
                 s.UseClustering();
+                s.UseProperties = true;
+                s.UseNewtonsoftJsonSerializer();
             });
 
             options.MisfireThreshold = TimeSpan.FromSeconds(30);
