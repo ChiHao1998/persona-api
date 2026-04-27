@@ -6,8 +6,8 @@ using Api.Service.Startup;
 using Serilog.Middleware;
 using Configuration;
 using Cors.Model;
-using Postgres.Model;
 using Serilog;
+using Api.Service.Background;
 
 const string APPLICATION_NAME = "persona-backend";
 
@@ -18,10 +18,7 @@ builder.Host.SetupSerilog(APPLICATION_NAME);
 
 Log.Information($"Host directory: {Directory.GetCurrentDirectory()}");
 
-
 builder.InjectAppConfiguration<AppSettings>();
-builder.InjectAppConfiguration<PostgresSettings>();
-
 
 builder.Services.SetupResponseCompression();
 
@@ -32,6 +29,7 @@ builder.Services.AddHttpClientWithPolicies<IVaultHttpClientBrokerService, VaultH
     }
 );
 
+builder.Services.AutoAddSingletonServiceByISingletonService();
 builder.Services.AutoAddScopedServiceByIScopedService();
 
 AppSettings appsettings = await VaultStartupService.RetrieveVaultAppSettingsAsync(builder.Services);
@@ -55,13 +53,19 @@ builder.Services.SetupSwagger();
 
 builder.Services.SetupPostgresDatabaseContext<PersonaContext>(appsettings.PostgresSettings);
 
+builder.Services.SetupQuartzScheduler(appsettings.PostgresSettings.GenerateConnectionString());
+
 builder.Services.AddResponseCaching();
 
 builder.Services.SetMaxRequestBodySize(maxRequestBodySizeInMb: 5);
 
+builder.Services.AddHostedService<RefreshBackgroundService>();
+
 WebApplication app = builder.Build();
 
 await app.Services.CheckAndApplyMigrationsAsync<PersonaContext>();
+
+await app.Services.EnsureQuartzSchemaAsync<PersonaContext>(appsettings.PostgresSettings.GenerateConnectionString());
 
 app.UseHttpsRedirection();
 
