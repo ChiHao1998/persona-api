@@ -7,10 +7,6 @@
 <!-- Why is this change needed? What problem does it solve? -->
 
 ## Related Issue
-<!-- Use one:
-- Refs #123 (partial work)
-- Closes #123 (final PR)
--->
 
 ## How Has This Been Tested?
 <!-- Describe how you validated your changes -->
