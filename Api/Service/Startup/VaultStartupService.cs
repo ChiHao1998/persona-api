@@ -28,6 +28,8 @@ namespace Api.Service.Startup
                 Log.Error("Error occurred while retrieving vault app settings: {ExceptionMessage}", exception.Message);
             }
 
+            iServiceCollection.AddSingleton(appSettings);
+
             return appSettings;
         }
     }

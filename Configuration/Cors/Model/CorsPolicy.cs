@@ -8,7 +8,7 @@ namespace Cors.Model
         public required string Policy { get; set; }
 
         [JsonPropertyName("is_allow_credentials")]
-        public bool IsAllowCredentials { get; set; } = true;
+        public bool IsAllowCredentials { get; set; } = false;
 
         [JsonPropertyName("allowed_origin_list")]
         public string[]? AllowedOriginList { get; set; }

@@ -3,6 +3,7 @@
         "common",
         "configuration",
         "vault",
-        "user"
+        "user",
+        "migration"
     ]
 }

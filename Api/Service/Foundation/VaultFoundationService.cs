@@ -3,26 +3,24 @@ using Api.Interface.Foundation;
 using Api.Model.Common;
 using Api.Model.Dto.Response;
 using Common.Interface;
-using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Api.Service.Foundation
 {
     public class VaultFoundationService(
         IVaultHttpClientBrokerService iVaultHttpClientBrokerService,
-        IOptionsMonitor<AppSettings> appSettings
+        AppSettings appSettings
     ) : IVaultFoundationService, IScopedService
     {
-        private readonly AppSettings appSettings = appSettings.CurrentValue;
-
         public async ValueTask AddLoginAsync(CancellationToken cancellationToken = default)
         {
-            if (appSettings.VaultHttpClient.ExpireAt != null)
-                return;
-
             PostVaultAuthResponseDto postVaultAuthResponseDto = await iVaultHttpClientBrokerService.PostLoginAsync(cancellationToken);
 
-            appSettings.VaultHttpClient.ExpireAt = DateTimeOffset.UtcNow.AddSeconds(postVaultAuthResponseDto.LeaseDuration);
+            DateTimeOffset expiryDate = DateTimeOffset.UtcNow.AddSeconds(postVaultAuthResponseDto.LeaseDuration);
+
+            appSettings.VaultHttpClient.ExpireAt = expiryDate;
+
+            Log.Information($"Vault token retrieved. (Expired at {appSettings.VaultHttpClient.ExpireAt})");
 
             return;
         }
