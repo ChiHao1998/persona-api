@@ -19,6 +19,7 @@ namespace Api.Service.Foundation
             DateTimeOffset expiryDate = DateTimeOffset.UtcNow.AddSeconds(postVaultAuthResponseDto.LeaseDuration);
 
             appSettings.VaultHttpClient.ExpireAt = expiryDate;
+            appSettings.VaultHttpClient.Token = postVaultAuthResponseDto.ClientToken;
 
             Log.Information($"Vault token retrieved. (Expired at {appSettings.VaultHttpClient.ExpireAt})");
 
@@ -39,11 +40,11 @@ namespace Api.Service.Foundation
 
         public async ValueTask<AppSettings> RetrieveVaultPostgresCredentialAsync(string databaseEngineName, string databaseEngineRole, CancellationToken cancellationToken = default)
         {
-            PostVaultDatabaseCredentialResponseDto postVaultDatabaseCredentialDto = await iVaultHttpClientBrokerService.PostPostgresCredentialAsync(databaseEngineName, databaseEngineRole, cancellationToken);
+            VaultResponseWrapperDto<PostVaultDatabaseCredentialResponseDto> vaultResponseWrapperDto = await iVaultHttpClientBrokerService.PostPostgresCredentialAsync(databaseEngineName, databaseEngineRole, cancellationToken);
 
-            appSettings.PostgresSettings.Username = postVaultDatabaseCredentialDto.Username;
-            appSettings.PostgresSettings.Password = postVaultDatabaseCredentialDto.Password;
-            appSettings.PostgresSettings.ExpireAt = DateTimeOffset.UtcNow.AddSeconds(postVaultDatabaseCredentialDto.LeaseDuration);
+            appSettings.PostgresSettings.Username = vaultResponseWrapperDto.Data.Username;
+            appSettings.PostgresSettings.Password = vaultResponseWrapperDto.Data.Password;
+            appSettings.PostgresSettings.ExpireAt = DateTimeOffset.UtcNow.AddSeconds(vaultResponseWrapperDto.LeaseDuration);
 
             Log.Information("Vault postgres temporary credentials retrieved");
 
