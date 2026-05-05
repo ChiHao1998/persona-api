@@ -7,7 +7,7 @@ namespace Api.Service.Broker.VaultHttpClientBrokerService
 {
     public partial class VaultHttpClientBrokerService : IVaultHttpClientBrokerService, IScopedService
     {
-        public async ValueTask<PostVaultDatabaseCredentialResponseDto> PostPostgresCredentialAsync(string databaseEngineName, string databaseEngineRole, CancellationToken cancellationToken = default)
+        public async ValueTask<VaultResponseWrapperDto<PostVaultDatabaseCredentialResponseDto>> PostPostgresCredentialAsync(string databaseEngineName, string databaseEngineRole, CancellationToken cancellationToken = default)
         {
             string url = $"{appSettings.VaultHttpClient.BaseUrl}/v1/{databaseEngineName}/creds/{databaseEngineRole}";
 
@@ -21,7 +21,7 @@ namespace Api.Service.Broker.VaultHttpClientBrokerService
                 throw new HttpRequestException(
                     $"Vault request failed: {(int)response.StatusCode} {response.ReasonPhrase} " + $"{await response.Content.ReadAsStringAsync(cancellationToken)}");
 
-            return (await response.Content.ReadFromJsonAsync<VaultResponseWrapperDto<PostVaultDatabaseCredentialResponseDto>>(cancellationToken))?.Data ??
+            return (await response.Content.ReadFromJsonAsync<VaultResponseWrapperDto<PostVaultDatabaseCredentialResponseDto>>(cancellationToken)) ??
             throw new JsonException("Invalid response from Vault");
         }
     }
