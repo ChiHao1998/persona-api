@@ -20,7 +20,7 @@ namespace Postgres.Model
         public string VaultDatabaseEngineRole { get; set; } = string.Empty;
 
         [JsonIgnore]
-        public DateTimeOffset? ExpireAt { get; set; } = null;
+        public DateTimeOffset ExpireAt { get; set; } = DateTimeOffset.UtcNow;
 
         [JsonIgnore]
         public string Username { get; set; } = string.Empty;
