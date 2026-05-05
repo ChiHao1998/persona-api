@@ -59,7 +59,8 @@ builder.Services.AddResponseCaching();
 
 builder.Services.SetMaxRequestBodySize(maxRequestBodySizeInMb: 5);
 
-builder.Services.AddHostedService<RefreshBackgroundService>();
+builder.Services.AddHostedService<RefreshVaultAppSettingBackgroundService>();
+builder.Services.AddHostedService<RefreshVaultPostgresCredentialBackgroundService>();
 
 WebApplication app = builder.Build();
 
