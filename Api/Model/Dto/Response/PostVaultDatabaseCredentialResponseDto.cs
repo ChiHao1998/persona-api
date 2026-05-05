@@ -9,8 +9,5 @@ namespace Api.Model.Dto.Response
 
         [JsonPropertyName("password")]
         public string Password { get; set; } = default!;
-
-        [JsonPropertyName("lease_duration")]
-        public int LeaseDuration { get; set; }
     }
 }

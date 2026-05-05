@@ -15,6 +15,7 @@ namespace Api.Model.Common
         public string BaseUrl { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string? Token { get; set; }
         public DateTimeOffset ExpireAt { get; set; } = DateTimeOffset.UtcNow;
     }
 }

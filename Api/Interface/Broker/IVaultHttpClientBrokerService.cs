@@ -6,6 +6,6 @@ namespace Api.Interface.Broker
     {
         ValueTask<PostVaultAuthResponseDto> PostLoginAsync(CancellationToken cancellationToken = default);
         ValueTask<GetVaultRootSecretResponseDto> GetPersonaRootDataAsync(CancellationToken cancellationToken = default);
-        ValueTask<PostVaultDatabaseCredentialResponseDto> PostPostgresCredentialAsync(string databaseEngineName, string databaseEngineRole, CancellationToken cancellationToken = default);
+        ValueTask<VaultResponseWrapperDto<PostVaultDatabaseCredentialResponseDto>> PostPostgresCredentialAsync(string databaseEngineName, string databaseEngineRole, CancellationToken cancellationToken = default);
     }
 }

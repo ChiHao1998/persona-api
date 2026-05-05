@@ -17,7 +17,7 @@ namespace Api.Model.Dto.Response
         public int LeaseDuration { get; init; }
 
         [JsonPropertyName("data")]
-        public T? Data { get; init; }
+        public required T Data { get; init; }
 
         [JsonPropertyName("wrap_info")]
         public object? WrapInfo { get; init; }

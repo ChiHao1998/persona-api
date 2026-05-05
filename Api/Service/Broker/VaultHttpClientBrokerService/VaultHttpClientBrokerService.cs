@@ -24,6 +24,7 @@ namespace Api.Service.Broker.VaultHttpClientBrokerService
             string requestId = new UUID().ToFormattedString();
 
             httpRequestMessage.Headers.Add("X-Request-Id", requestId);
+            httpRequestMessage.Headers.Add("X-Vault-Token", appSettings.VaultHttpClient.Token);
 
             Stopwatch stopwatch = Stopwatch.StartNew();
 
