@@ -1,14 +1,13 @@
 using Api.Model.Common;
 using Api.Service.Job;
-using Common.Interface;
 using QuartzScheduler.Interface;
 
 namespace Api.Service.Background
 {
-    public class RefreshBackgroundService(
+    public class RefreshVaultAppSettingBackgroundService(
         IServiceProvider serviceProvider,
         AppSettings appSettings,
-        ILogger<RefreshBackgroundService> iLogger
+        ILogger<RefreshVaultAppSettingBackgroundService> iLogger
     ) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
