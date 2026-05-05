@@ -18,9 +18,6 @@ namespace Api.Service.Broker.VaultHttpClientBrokerService
 
             PostVaultAuthResponseDto postVaultAuthResponseDto = (await response.Content.ReadFromJsonAsync<VaultResponseWrapperDto>(cancellationToken: cancellationToken))?.Auth ?? throw new JsonException("Invalid response from Vault");
 
-            httpClient.DefaultRequestHeaders.Remove("X-Vault-Token");
-            httpClient.DefaultRequestHeaders.Add("X-Vault-Token", postVaultAuthResponseDto.ClientToken);
-
             return postVaultAuthResponseDto;
         }
     }
