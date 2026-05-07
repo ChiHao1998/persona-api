@@ -1,6 +1,7 @@
 using Common.Interface;
 using Cors.Model;
 using Postgres.Model;
+using QuartzScheduler.Model;
 
 namespace Api.Model.Common
 {
@@ -9,6 +10,9 @@ namespace Api.Model.Common
         public VaultHttpClient VaultHttpClient { get; set; } = new();
         public CorsPolicy[] CorsPolicyList { get; set; } = [];
         public PostgresSettings PostgresSettings { get; set; } = new();
+        public QuartzSettings QuartzSettings { get; set; } = new();
+
+        public string GenerateQuartzConnectionString() => $"Host={PostgresSettings.Host};Port={PostgresSettings.Port};Database={PostgresSettings.DatabaseName};Username={QuartzSettings.Username};Password={QuartzSettings.Password};Pooling=false;";
     }
     public class VaultHttpClient
     {

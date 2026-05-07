@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Cors.Model;
 using Postgres.Model;
+using QuartzScheduler.Model;
 
 namespace Api.Model.Dto.Response
 {
@@ -16,5 +17,8 @@ namespace Api.Model.Dto.Response
 
         [JsonPropertyName("postgres_settings")]
         public required PostgresSettings PostgresSettings { get; set; }
+
+        [JsonPropertyName("quartz_settings")]
+        public required QuartzSettings QuartzSettings { get; set; }
     }
 }
