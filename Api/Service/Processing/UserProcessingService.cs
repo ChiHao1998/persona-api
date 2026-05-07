@@ -16,6 +16,8 @@ namespace Api.Service.Processing
     {
         public async ValueTask<OneOf<User, Error>> ProcessAddUserAsync(string email, string password)
         {
+            email = email.Trim().ToLowerInvariant();
+
             if (iUserFoundationService.RetrieveUserAsync().Any(user => user.Email == email))
                 return new Error(ErrorCodeEnum.ALREADY_EXISTED, $"User with email {email} already exists.");
 
