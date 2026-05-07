@@ -77,39 +77,29 @@ public static class PostgresConfiguration
         using IServiceScope scope = services.CreateScope();
         ILogger logger = scope.ServiceProvider.GetRequiredService<ILogger<T>>();
 
-        await using var conn = new NpgsqlConnection(connectionString);
+        await using NpgsqlConnection conn = new(connectionString);
         await conn.OpenAsync();
 
-        await using var checkCmd = new NpgsqlCommand(@"
+        await using NpgsqlCommand checkCmd = new(@"
             SELECT EXISTS (
                 SELECT 1
                 FROM information_schema.tables
-                WHERE table_schema = 'public'
+                WHERE table_schema = 'quartz'
                 AND table_name = 'qrtz_job_details'
             );
         ", conn);
 
-        var exists = (bool)(await checkCmd.ExecuteScalarAsync() ?? false);
-
-        if (exists)
+        if ((bool)(await checkCmd.ExecuteScalarAsync() ?? false))
             return;
 
-        var assembly = typeof(PostgresConfiguration).Assembly;
+        await using Stream stream = typeof(PostgresConfiguration).Assembly
+        .GetManifestResourceStream("Postgres.Script.quartz_schema.sql")
+        ?? throw new InvalidOperationException("Quartz schema script not found.");
 
-        var names = assembly.GetManifestResourceNames();
-        foreach (var n in names)
-        {
-            Console.WriteLine(n);
-        }
+        using StreamReader reader = new(stream);
+        string sql = await reader.ReadToEndAsync();
 
-        await using var stream = assembly.GetManifestResourceStream(
-            "Postgres.Script.quartz_schema.sql")
-            ?? throw new InvalidOperationException("Quartz schema script not found.");
-
-        using var reader = new StreamReader(stream);
-        var sql = await reader.ReadToEndAsync();
-
-        await using var cmd = new NpgsqlCommand(sql, conn);
+        await using NpgsqlCommand cmd = new(sql, conn);
         await cmd.ExecuteNonQueryAsync();
 
         logger.LogInformation($"Quartz schema initialized");

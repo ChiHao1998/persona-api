@@ -7,6 +7,7 @@ namespace Api.Model.Dto.Request
     {
         [GenericRequired]
         [EmailAddress]
+        [GenericStringLength(254)]
         public string Email { get; set; } = string.Empty;
 
         [GenericRequired]

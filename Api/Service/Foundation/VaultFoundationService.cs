@@ -32,6 +32,7 @@ namespace Api.Service.Foundation
 
             appSettings.CorsPolicyList = getVaultRootSecretResponseDto.CorsPolicyList;
             appSettings.PostgresSettings = getVaultRootSecretResponseDto.PostgresSettings;
+            appSettings.QuartzSettings = getVaultRootSecretResponseDto.QuartzSettings;
 
             Log.Information("Vault secret settings retrieved");
 

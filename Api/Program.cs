@@ -53,7 +53,7 @@ builder.Services.SetupSwagger();
 
 builder.Services.SetupPostgresDatabaseContext<PersonaContext>(appsettings.PostgresSettings);
 
-builder.Services.SetupQuartzScheduler(appsettings.PostgresSettings.GenerateConnectionString());
+builder.Services.SetupQuartzScheduler(appsettings.GenerateQuartzConnectionString());
 
 builder.Services.AddResponseCaching();
 
@@ -66,7 +66,7 @@ WebApplication app = builder.Build();
 
 await app.Services.CheckAndApplyMigrationsAsync<PersonaContext>();
 
-await app.Services.EnsureQuartzSchemaAsync<PersonaContext>(appsettings.PostgresSettings.GenerateConnectionString());
+await app.Services.EnsureQuartzSchemaAsync<PersonaContext>(appsettings.GenerateQuartzConnectionString());
 
 app.UseHttpsRedirection();
 
