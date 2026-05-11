@@ -4,6 +4,7 @@ namespace Common.Model.CustomEnum
     {
         NOT_FOUND,
         ALREADY_EXISTED,
+        RATE_LIMIT_EXCEEDED,
         INTERNAL_ERROR
     }
 }

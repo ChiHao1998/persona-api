@@ -8,6 +8,7 @@ using Configuration;
 using Cors.Model;
 using Serilog;
 using Api.Service.Background;
+using Controller.Model;
 
 const string APPLICATION_NAME = "persona-backend";
 
@@ -45,7 +46,7 @@ builder.Services.SetupApiVersioning();
 
 builder.Services.SetupRequestTimeout(TimeSpan.FromSeconds(30));
 
-builder.Services.SetupRateLimiter([new() { Name = APPLICATION_NAME, RequestLimit = 100, Window = TimeSpan.FromSeconds(10) }]);
+builder.Services.SetupRateLimiter([new() { Name = RateLimitTypeEnum.Ip, Type = RateLimitTypeEnum.Ip, RequestLimit = 10, Window = TimeSpan.FromSeconds(60) }]);
 
 builder.Services.SetupController(applicationName: APPLICATION_NAME);
 

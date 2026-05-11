@@ -2,6 +2,7 @@ using Api.Interface.Aggregation;
 using Api.Model.Dto.Request;
 using Common.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Api.Controller
@@ -10,6 +11,7 @@ namespace Api.Controller
     [Route("v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     [Produces("application/json")]
+    [EnableRateLimiting("Ip")]
     public class UserController(
         IUserAggregationService iUserAggregationService
     ) : ControllerBase

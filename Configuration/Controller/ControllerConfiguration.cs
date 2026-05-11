@@ -1,12 +1,14 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
+using Common.Model;
+using Common.Model.CustomEnum;
 using Controller.Helper;
 using Controller.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -80,13 +82,66 @@ public static class ControllerConfiguration
     {
         services.AddRateLimiter(options =>
         {
+            // =========================================
+            // IP limiters
+            // =========================================
             foreach (RateLimiterPolicy rateLimiterPolicy in rateLimiterPolicyList)
-                options.AddFixedWindowLimiter(rateLimiterPolicy.Name, limiter =>
+            {
+                options.AddPolicy(rateLimiterPolicy.Name, httpContext =>
                 {
-                    limiter.PermitLimit = rateLimiterPolicy.RequestLimit;
-                    limiter.Window = rateLimiterPolicy.Window;
-                    limiter.QueueLimit = rateLimiterPolicy.QueueLimit;
+                    httpContext.Items["RateLimitType"] = rateLimiterPolicy.Type.ToString();
+
+                    string key = rateLimiterPolicy.Type switch
+                    {
+                        RateLimitTypeEnum.Ip => httpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A",
+
+                        _ => "N/A"
+                    };
+
+                    return RateLimitPartition.GetTokenBucketLimiter(
+                        partitionKey: key,
+                        factory: _ => new TokenBucketRateLimiterOptions
+                        {
+                            TokenLimit = rateLimiterPolicy.RequestLimit,
+                            TokensPerPeriod = 1,
+                            ReplenishmentPeriod = rateLimiterPolicy.Window,
+                            AutoReplenishment = true,
+                            QueueLimit = rateLimiterPolicy.QueueLimit,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+                        });
                 });
+            }
+
+            // =========================================
+            // Common rejection handler
+            // =========================================
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.OnRejected = async (context, token) =>
+            {
+                HttpContext httpContext = context.HttpContext;
+
+                string rateLimitType = httpContext.Items["RateLimitType"] as string ?? "N/A";
+
+                string message = rateLimitType switch
+                {
+                    RateLimitTypeEnum.Ip => "Too many requests. Please slow down.",
+
+                    _ => "Rate limit exceeded."
+                };
+
+                httpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.Headers["X-RateLimit-Type"] = rateLimitType;
+
+                ResponseWrapper response = ResponseBuilder
+                    .CreateFail(new Error(
+                        ErrorCodeEnum.RATE_LIMIT_EXCEEDED,
+                        message))
+                    .Build();
+
+                await httpContext.Response.WriteAsJsonAsync(response, cancellationToken: token);
+            };
         });
 
         return services;
