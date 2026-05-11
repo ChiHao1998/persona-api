@@ -1,31 +1,23 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using SerilogLogger.Model;
 
 namespace Serilog.Middleware
 {
-    public class HttpInboundLoggingMiddleware
+    public class HttpInboundLoggingMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
-
-        public HttpInboundLoggingMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
         public async Task Invoke(HttpContext context)
         {
-            var stopwatch = Stopwatch.StartNew();
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
-            await _next(context);
+            await next(context);
 
             stopwatch.Stop();
 
-            var requestHeaders = context.Request.Headers
-                .ToDictionary(h => h.Key, h => (object)h.Value.ToString());
+            Dictionary<string, object> requestHeaderList = context.Request.Headers.ToDictionary(header => header.Key, header => (object)header.Value.ToString());
 
-            var responseHeaders = context.Response.Headers
-                .ToDictionary(h => h.Key, h => (object)h.Value.ToString());
+            Dictionary<string, object> responseHeaderList = context.Response.Headers.ToDictionary(header => header.Key, header => (object)header.Value.ToString());
 
             Log
             .ForContext<HttpInboundLog>()
@@ -37,14 +29,14 @@ namespace Serilog.Middleware
             .ForContext("UserId", string.IsNullOrWhiteSpace(context.User?.Identity?.Name) ? null : context.User?.Identity?.Name)
             .ForContext("StatusCode", context.Response.StatusCode)
             .ForContext("ElapsedMs", stopwatch.ElapsedMilliseconds)
-            .ForContext("RequestHeaders", requestHeaders)
-            .ForContext("ResponseHeaders", responseHeaders)
+            .ForContext("RequestHeaders", requestHeaderList)
+            .ForContext("ResponseHeaders", responseHeaderList)
             .Information("HTTP Inbound Request");
         }
 
         private static string? GetClientIp(HttpContext context)
         {
-            if (context.Request.Headers.TryGetValue("X-Forwarded-For", out var ip))
+            if (context.Request.Headers.TryGetValue("X-Forwarded-For", out StringValues ip))
                 return ip.ToString();
 
             return context.Connection.RemoteIpAddress?.ToString();
